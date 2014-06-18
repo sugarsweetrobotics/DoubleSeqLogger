@@ -10,14 +10,14 @@
 #ifndef DOUBLESEQLOGGER_H
 #define DOUBLESEQLOGGER_H
 
+#include <rtm/idl/BasicDataTypeSkel.h>
+#include <rtm/idl/ExtendedDataTypesSkel.h>
+#include <rtm/idl/InterfaceDataTypesSkel.h>
 #include <rtm/Manager.h>
 #include <rtm/DataFlowComponentBase.h>
 #include <rtm/CorbaPort.h>
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
-#include <rtm/idl/BasicDataTypeSkel.h>
-#include <rtm/idl/ExtendedDataTypesSkel.h>
-#include <rtm/idl/InterfaceDataTypesSkel.h>
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -29,6 +29,7 @@
 
 // </rtc-template>
 
+#include <fstream>
 using namespace RTC;
 
 /*!
@@ -229,6 +230,12 @@ class DoubleSeqLogger
    * - DefaultValue: 0
    */
   int m_console_print;
+  /*!
+   * 
+   * - Name:  logdir
+   * - DefaultValue: log
+   */
+  std::string m_logdir;
 
   // </rtc-template>
 
@@ -271,6 +278,9 @@ class DoubleSeqLogger
   
   // </rtc-template>
 
+
+  std::ofstream m_FileOut;
+  bool m_Init;
 };
 
 

@@ -8,7 +8,10 @@
  */
 
 #include "DoubleSeqLogger.h"
-
+#include <string>
+#include <iomanip>
+#include <iostream>
+#include <time.h>
 // Module specification
 // <rtc-template block="module_spec">
 static const char* doubleseqlogger_spec[] =
@@ -26,6 +29,7 @@ static const char* doubleseqlogger_spec[] =
     "lang_type",         "compile",
     // Configuration variables
     "conf.default.console_print", "0",
+    "conf.default.logdir", "log", 
     // Widget
     "conf.__widget__.console_print", "text",
     // Constraints
@@ -75,6 +79,7 @@ RTC::ReturnCode_t DoubleSeqLogger::onInitialize()
   // <rtc-template block="bind_config">
   // Bind variables and configuration variable
   bindParameter("console_print", m_console_print, "0");
+  bindParameter("logdir", m_logdir, "log");
   // </rtc-template>
   
   return RTC::RTC_OK;
@@ -104,18 +109,64 @@ RTC::ReturnCode_t DoubleSeqLogger::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t DoubleSeqLogger::onActivated(RTC::UniqueId ec_id)
 {
+  std::cout << "[RTC.DoubleSeqLogger] Activated" << std::endl;
+  time_t timer;
+  time(&timer);
+  struct tm *t = localtime(&timer);
+  std::ostringstream oss;
+
+  oss << m_logdir << "/" << "doubleseq_" << t->tm_year+1900;
+  oss << std::setw(2) << std::setfill('0') ;
+  oss << t->tm_mon+1 << t->tm_mday << t->tm_hour << t->tm_min << t->tm_sec << ".log";
+  std::string filename = oss.str();
+  std::cout << "[RTC.DoubleSeqLogger] Saving File to " << filename << std::endl;
+  m_FileOut.open(filename);
+  if (m_FileOut.fail()) {
+    std::cout << "[RTC.DoubleSeqLogger] Failed to open file (" << filename << ")" << std::endl;
+    return RTC::RTC_ERROR;
+  }
+  m_Init = false;
   return RTC::RTC_OK;
 }
 
 
 RTC::ReturnCode_t DoubleSeqLogger::onDeactivated(RTC::UniqueId ec_id)
 {
+  std::cout << "[RTC.DoubleSeqLogger] Deactivated" << std::endl;
+  if (!m_FileOut.fail()) {
+    m_FileOut.close();
+  }
+
   return RTC::RTC_OK;
 }
 
 
 RTC::ReturnCode_t DoubleSeqLogger::onExecute(RTC::UniqueId ec_id)
 {
+  if (m_inIn.isNew()) {
+    m_inIn.read();
+    if (!m_Init) { // Write Label Row
+      m_FileOut << "Sec, NanoSec, ";
+      for (int i = 0;i < m_in.data.length();i++) {
+	m_FileOut << i;
+	if (i != m_in.data.length()-1) {
+	  m_FileOut << ", ";
+	} else {
+	  m_FileOut << "\n";
+	}
+      }
+      m_Init = true;
+    }
+    m_FileOut << m_in.tm.sec << ", " << m_in.tm.nsec << ", ";
+    for (int i = 0;i < m_in.data.length();i++) {
+      m_FileOut << m_in.data[i];
+      if (i != m_in.data.length()-1) {
+	m_FileOut << ", ";
+      } else {
+	m_FileOut << "\n";
+      }
+    }
+  }
   return RTC::RTC_OK;
 }
 
