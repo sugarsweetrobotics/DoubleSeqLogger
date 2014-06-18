@@ -1,0 +1,54 @@
+# DoubleSeqLogger CMake config file
+#
+# This file sets the following variables:
+# DoubleSeqLogger_FOUND - Always TRUE.
+# DoubleSeqLogger_INCLUDE_DIRS - Directories containing the DoubleSeqLogger include files.
+# DoubleSeqLogger_IDL_DIRS - Directories containing the DoubleSeqLogger IDL files.
+# DoubleSeqLogger_LIBRARIES - Libraries needed to use DoubleSeqLogger.
+# DoubleSeqLogger_DEFINITIONS - Compiler flags for DoubleSeqLogger.
+# DoubleSeqLogger_VERSION - The version of DoubleSeqLogger found.
+# DoubleSeqLogger_VERSION_MAJOR - The major version of DoubleSeqLogger found.
+# DoubleSeqLogger_VERSION_MINOR - The minor version of DoubleSeqLogger found.
+# DoubleSeqLogger_VERSION_REVISION - The revision version of DoubleSeqLogger found.
+# DoubleSeqLogger_VERSION_CANDIDATE - The candidate version of DoubleSeqLogger found.
+
+message(STATUS "Found DoubleSeqLogger-@PROJECT_VERSION@")
+set(DoubleSeqLogger_FOUND TRUE)
+
+find_package(<dependency> REQUIRED)
+
+#set(DoubleSeqLogger_INCLUDE_DIRS
+#    "@CMAKE_INSTALL_PREFIX@/include/@PROJECT_NAME_LOWER@-@PROJECT_VERSION_MAJOR@"
+#    ${<dependency>_INCLUDE_DIRS}
+#    )
+#
+#set(DoubleSeqLogger_IDL_DIRS
+#    "@CMAKE_INSTALL_PREFIX@/include/@PROJECT_NAME_LOWER@-@PROJECT_VERSION_MAJOR@/idl")
+set(DoubleSeqLogger_INCLUDE_DIRS
+    "@CMAKE_INSTALL_PREFIX@/include/@CPACK_PACKAGE_FILE_NAME@"
+    ${<dependency>_INCLUDE_DIRS}
+    )
+set(DoubleSeqLogger_IDL_DIRS
+    "@CMAKE_INSTALL_PREFIX@/include/@CPACK_PACKAGE_FILE_NAME@/idl")
+
+
+if(WIN32)
+    set(DoubleSeqLogger_LIBRARIES
+        "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@CMAKE_SHARED_LIBRARY_PREFIX@@PROJECT_NAME_LOWER@@CMAKE_STATIC_LIBRARY_SUFFIX@"
+        ${<dependency>_LIBRARIES}
+        )
+else(WIN32)
+    set(DoubleSeqLogger_LIBRARIES
+        "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@CMAKE_SHARED_LIBRARY_PREFIX@@PROJECT_NAME_LOWER@@CMAKE_SHARED_LIBRARY_SUFFIX@"
+        ${<dependency>_LIBRARIES}
+        )
+endif(WIN32)
+
+set(DoubleSeqLogger_DEFINITIONS ${<dependency>_DEFINITIONS})
+
+set(DoubleSeqLogger_VERSION @PROJECT_VERSION@)
+set(DoubleSeqLogger_VERSION_MAJOR @PROJECT_VERSION_MAJOR@)
+set(DoubleSeqLogger_VERSION_MINOR @PROJECT_VERSION_MINOR@)
+set(DoubleSeqLogger_VERSION_REVISION @PROJECT_VERSION_REVISION@)
+set(DoubleSeqLogger_VERSION_CANDIDATE @PROJECT_VERSION_CANDIDATE@)
+
